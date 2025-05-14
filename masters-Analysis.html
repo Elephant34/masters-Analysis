@@ -374,6 +374,70 @@ odds ratio
 </div>
 </section>
 </section>
+<section id="generalised-linear-model" class="level2">
+<h2 class="anchored" data-anchor-id="generalised-linear-model">Generalised Linear Model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>model_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">add_context_trial_id</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_context_bird_id</span>(</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_contrast_columns</span>(</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>(</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  exit_gate_id <span class="sc">~</span> </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    bg1 <span class="sc">+</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    fg1 <span class="sc">+</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    fg2 <span class="sc">+</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    bg2 <span class="sc">+</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    contrast_bg1_bg2 <span class="sc">+</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    contrast_bg1_fg1 <span class="sc">+</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    contrast_fg1_fg2 <span class="sc">+</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    contrast_fg2_bg2,</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> model_data,</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link=</span><span class="st">"logit"</span>),</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">weights =</span> <span class="fu">ifelse</span>(exit_gate_id <span class="sc">==</span> <span class="st">"left"</span>, <span class="dv">1</span><span class="sc">/</span>bias_left, <span class="dv">1</span><span class="sc">/</span>bias_right)</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in eval(family$initialize): non-integer #successes in a binomial glm!</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = exit_gate_id ~ bg1 + fg1 + fg2 + bg2 + contrast_bg1_bg2 + 
+    contrast_bg1_fg1 + contrast_fg1_fg2 + contrast_fg2_bg2, family = binomial(link = "logit"), 
+    data = model_data, weights = ifelse(exit_gate_id == "left", 
+        1/bias_left, 1/bias_right))
+
+Coefficients: (6 not defined because of singularities)
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -0.39416    0.16853  -2.339 0.019347 *  
+bg1light          -0.23943    0.11337  -2.112 0.034690 *  
+fg1white          -0.03647    0.11912  -0.306 0.759508    
+fg2white           0.42981    0.11992   3.584 0.000338 ***
+bg2light           0.40460    0.11751   3.443 0.000575 ***
+contrast_bg1_bg20 -0.56595    0.11883  -4.763 1.91e-06 ***
+contrast_bg1_bg21       NA         NA      NA       NA    
+contrast_bg1_fg10  0.51112    0.11472   4.455 8.38e-06 ***
+contrast_bg1_fg11       NA         NA      NA       NA    
+contrast_fg1_fg20       NA         NA      NA       NA    
+contrast_fg1_fg21       NA         NA      NA       NA    
+contrast_fg2_bg20       NA         NA      NA       NA    
+contrast_fg2_bg21       NA         NA      NA       NA    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 1966.4  on 706  degrees of freedom
+Residual deviance: 1896.3  on 700  degrees of freedom
+AIC: 1720.2
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+</section>
 </section>
 
 </main>

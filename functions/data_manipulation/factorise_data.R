@@ -10,6 +10,10 @@ factorise_data <- function(data) {
     "bg2",
     "fg1",
     "fg2",
+    "contrast_bg1_bg2",
+    "contrast_bg1_fg1",
+    "contrast_fg1_fg2",
+    "contrast_fg2_bg2",
     "phenotype",
     "sex"
   )

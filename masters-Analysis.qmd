@@ -260,5 +260,26 @@ relative_risk_right(contingency_table_normal_contrast)
 model_data <- data %>% add_context_trial_id(
 ) %>% add_context_bird_id(
 ) %>% add_contrast_columns(
-) %>% factorise_data()
+) %>% factorise_data(
+)
+```
+
+```{r}
+#| label: Flight Direction Model
+
+model <- glm(
+  exit_gate_id ~ 
+    bg1 +
+    fg1 +
+    fg2 +
+    bg2 +
+    contrast_bg1_bg2 +
+    contrast_bg1_fg1 +
+    contrast_fg1_fg2 +
+    contrast_fg2_bg2,
+  data = model_data,
+  family = binomial(link="logit"),
+  weights = ifelse(exit_gate_id == "left", 1/bias_left, 1/bias_right)
+)
+summary(model)
 ```

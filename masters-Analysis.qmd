@@ -1,0 +1,264 @@
+---
+title: "masters-Analysis"
+---
+
+# Reactive Gap Selection in Zebra Finches: The use of foreground contrast and background brightness
+
+Data cleaning and statistical analysis for my MBiol project.
+
+```{r}
+#| label: Load Packages
+#| echo: false
+#| include: false
+
+library(tidyverse)
+library(here)
+
+# Loads all defined functions
+function.sources = list.files(
+  c(
+    here("functions/data_manipulation"),
+    here("functions/statistics")
+  ), 
+  pattern="*.R$",
+  full.names=TRUE, 
+  ignore.case=TRUE
+)
+sapply(function.sources,source)
+rm(function.sources)
+```
+
+## Data Cleaning
+
+TODO- move cleaning code to this project
+
+## Data Reading
+
+```{r}
+#| label: Data Reading
+#| output: false
+
+data <- read_csv(
+  here("data/cleaned_gate_data.csv")
+) %>% match_bird_id(
+  here("data/bird_id_data.csv")
+) %>% factorise_data()
+```
+## Trial ID Bias
+
+TODO move code showing trial bias has no effect on left right bias here
+
+```{r}
+bias_left = 0.84
+bias_right = 1-bias_left
+```
+
+## Contingency Tables Analysis
+
+```{r}
+#| label: Count data
+
+count_data <- data %>% count(
+  trial_id,
+  exit_gate_id
+) %>% pivot_wider(
+  names_from = exit_gate_id,
+  values_from = n
+) %>% mutate(
+  total = left + right,
+  normalised_left = left/total,
+  normalised_right = right/total,
+  normalised_total = total/total
+) %>% add_context_trial_id(
+) %>% convert_state_values(
+) %>% factorise_data()
+```
+
+```{r}
+#| label: Contingency Table Null Proportions
+
+contingency_table_expected <- as.table(
+  rbind(
+    c(bias_left/2, bias_right/2), 
+    c(bias_left/2, bias_right/2)
+  )
+)
+dimnames(contingency_table_expected) <- list(
+  Condition = c("left", "right"),
+  Flight_Direction = c("left", "right")
+)
+contingency_table_expected
+
+```
+
+### Brightness
+
+```{r}
+#| label: Contingency Table Brightness
+
+contingency_table_brightness <- count_data %>% generate_contingency_table(
+  bg1,
+  bg2
+)
+contingency_table_normal_brightness <- count_data %>% generate_normal_contingency_table(
+  bg1,
+  bg2
+)
+
+contingency_table_brightness
+```
+
+```{r}
+#| label: Chi-Squared Brightness
+
+chi_squared_brightness <- chisq.test(
+  contingency_table_brightness,
+  p=contingency_table_expected,
+  correct=FALSE
+)
+chi_squared_brightness
+```
+
+```{r}
+#| label: Fisher's Exact Brightness
+
+fisher.test(
+  contingency_table_brightness
+)
+
+```
+
+
+Relative risk of switching from flying right to flying left when the left background is light and right background is dark:
+```{r}
+#| label: Relative Risk Left Brightness
+relative_risk_left(contingency_table_normal_brightness)
+```
+
+Relative risk of switching from flying left to flying right when the left background is dark and right background is bright
+```{r}
+#| label: Relative Risk Right Brightness
+relative_risk_right(contingency_table_normal_brightness)
+```
+
+### Foreground Edge
+
+```{r}
+#| label: Contingency Table Edge
+
+contingency_table_edge <- count_data %>% generate_contingency_table(
+  fg1,
+  fg2
+)
+contingency_table_normal_edge <- count_data %>% generate_normal_contingency_table(
+  fg1,
+  fg2
+)
+
+contingency_table_edge
+```
+
+```{r}
+#| label: Chi-Squared Edge
+
+chi_squared_edge <- chisq.test(
+  contingency_table_edge,
+  p=contingency_table_expected,
+  correct=FALSE
+)
+chi_squared_edge
+```
+
+```{r}
+#| label: Fisher's Exact Edge
+
+fisher.test(
+  contingency_table_edge
+)
+
+```
+Relative risk of switching from flying right to flying left when the left background is white and right background is black:
+```{r}
+#| label: Relative Risk Left Edge
+relative_risk_left(contingency_table_normal_edge)
+```
+
+Relative risk of switching from flying left to flying right when the left background is black and right background is white
+```{r}
+#| label: Relative Risk Right Edge
+relative_risk_right(contingency_table_normal_edge)
+```
+
+### Foreground to Background Contrast
+```{r}
+#| label: Contingency Table Contrast
+
+contrast_data <- count_data %>% add_contrast_columns(
+) %>% mutate( # Makes contrast absolute
+  contrast_bg1_fg1 = abs(contrast_bg1_fg1),
+  contrast_fg2_bg2 = abs(contrast_fg2_bg2)
+) %>% factorise_data(
+) %>% mutate( # Encodes 0 to be high contrast and 1 to be low contrast to be consistent
+  contrast_bg1_fg1 = fct_recode(contrast_bg1_fg1, "1" = "0", "0" = "1"),
+  contrast_fg2_bg2 = fct_recode(contrast_fg2_bg2, "1" = "0", "0" = "1")
+)
+
+contingency_table_contrast <- contrast_data %>% generate_contingency_table(
+  contrast_bg1_fg1,
+  contrast_fg2_bg2
+)
+
+contingency_table_normal_contrast <- contrast_data %>% generate_normal_contingency_table(
+  contrast_bg1_fg1,
+  contrast_fg2_bg2
+)
+
+
+contingency_table_brightness
+
+# Clean up since it is formated weirdly and not useful anymore
+rm(contrast_data)
+```
+
+```{r}
+#| label: Chi-Squared Contrast
+
+chi_squared_contrast <- chisq.test(
+  contingency_table_contrast,
+  p=contingency_table_expected,
+  correct=FALSE
+)
+chi_squared_contrast
+```
+
+```{r}
+#| label: Fisher's Exact Contrast
+
+fisher.test(
+  contingency_table_contrast
+)
+
+```
+Relative risk of switching from flying right to flying left when the left background has high contrast to the left foreground and right background has no contrast to the right foreground:
+```{r}
+#| label: Relative Risk Left Contrast
+relative_risk_left(contingency_table_normal_contrast)
+```
+
+Relative risk of switching from flying left to flying right when the left background is has no contrast to the left foregorund and right background is high contrast to the right foreground
+```{r}
+#| label: Relative Risk Right Contrast
+relative_risk_right(contingency_table_normal_contrast)
+```
+
+
+## Generalised Linear Model
+
+```{r}
+#| label: Model Data
+
+model_data <- data %>% add_context_trial_id(
+) %>% add_context_bird_id(
+) %>% add_contrast_columns(
+) %>% factorise_data()
+```

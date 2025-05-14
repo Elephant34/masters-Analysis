@@ -1,0 +1,9 @@
+trial_id,bg1,bg2,fg1,fg2
+1,light,dark,white,white
+2,dark,light,white,white
+3,light,dark,black,black
+4,dark,light,black,black
+5,light,light,white,black
+6,dark,dark,white,black
+7,light,light,black,white
+8,dark,dark,black,white

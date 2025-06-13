@@ -5,7 +5,7 @@ add_gate_value_column <- function(data) {
   data %>% mutate(
     exit_gate_value = case_match(
       exit_gate_id,
-      "left" ~ 0,
+      "left" ~ -1,
       "right" ~ 1
     )
   )

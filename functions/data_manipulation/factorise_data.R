@@ -1,8 +1,9 @@
 # factorise_data.R
 ## Converts any defined columns to factors
 
-factorise_data <- function(data) {
+factorise_data <- function(data, disclude=c()) {
   factor_column_list = c(
+    "gate_id",
     "trial_id",
     "exit_gate_id",
     "bird_id",
@@ -17,11 +18,7 @@ factorise_data <- function(data) {
     "phenotype",
     "sex"
   )
-  
-  # data %>% mutate_at(
-  #   factor_column_list,
-  #   as.factor
-  # )
+  factor_column_list <- factor_column_list[!factor_column_list %in% disclude]
   
   data %>% mutate(
     across(

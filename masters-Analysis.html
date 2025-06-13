@@ -99,78 +99,216 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="reactive-gap-selection-in-zebra-finches-the-use-of-foreground-contrast-and-background-brightness" class="level1">
 <h1>Reactive Gap Selection in Zebra Finches: The use of foreground contrast and background brightness</h1>
 <p>Data cleaning and statistical analysis for my MBiol project.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">121</span>) <span class="co"># Reproducibility</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <section id="data-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="data-cleaning">Data Cleaning</h2>
-<p>TODO- move cleaning code to this project</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">collate_raw_data</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/multi_file_raw"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>raw_data <span class="sc">%&gt;%</span> <span class="fu">write_csv</span>(<span class="fu">here</span>(<span class="st">"data/raw_data.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cleaned_gate_data <span class="ot">&lt;-</span> raw_data <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">clean_duplicate_times</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">validate_flights</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">pair_valid_flights</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">validate_direction</span>(</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_human_datetime</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cleaned_gate_data <span class="sc">%&gt;%</span> <span class="fu">write_csv</span>(<span class="fu">here</span>(<span class="st">"data/cleaned_gate_data.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="data-reading" class="level2">
 <h2 class="anchored" data-anchor-id="data-reading">Data Reading</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/cleaned_gate_data.csv"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">match_bird_id</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/bird_id_data.csv"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/cleaned_gate_data.csv"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">match_bird_id</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/bird_id_data.csv"</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="trial-id-bias" class="level2">
 <h2 class="anchored" data-anchor-id="trial-id-bias">Trial ID Bias</h2>
-<p>TODO move code showing trial bias has no effect on left right bias here</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>bias_left <span class="ot">=</span> <span class="fl">0.84</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>bias_right <span class="ot">=</span> <span class="dv">1</span><span class="sc">-</span>bias_left</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>trial_id_plot <span class="ot">&lt;-</span> <span class="fu">plot_trial_ids</span>(data)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>trial_id_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Trial%20ID%20Plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save_figure</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  trial_id_plot,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"figures/figure_trial_id_plot"</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">15</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>png 
+  2 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>state_inbalance <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">add_context_trial_id</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>() <span class="sc">%&gt;%</span> <span class="fu">generate_state_bias_tibble</span>()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>state_inbalance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+    bg1   bg2   fg1   fg2
+  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 0.992  1.01 0.851  1.42</code></pre>
+</div>
+</div>
+<div class="cell" data-execute="{&quot;cache&quot;:true}">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>reps <span class="ot">=</span> <span class="dv">500</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>bias_bootstrap <span class="ot">&lt;-</span> <span class="fu">replicate</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  reps,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> <span class="fu">generate_even_state_data</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">calculate_left_bias</span>()</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(bias_bootstrap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8380239</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(bias_bootstrap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.005643165</code></pre>
+</div>
+</div>
+<div class="cell" data-execute="{&quot;cache&quot;:true}">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>reps <span class="ot">=</span> <span class="dv">500</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>bias_bootstrap1 <span class="ot">&lt;-</span> <span class="fu">replicate</span>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  reps,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> <span class="fu">generate_even_trial_data</span>(</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">calculate_left_bias</span>()</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(bias_bootstrap1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8475588</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(bias_bootstrap1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.01071721</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>bias_left <span class="ot">=</span> data <span class="sc">%&gt;%</span> <span class="fu">calculate_left_bias</span>()</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>bias_right <span class="ot">=</span> <span class="dv">1</span><span class="sc">-</span>bias_left</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>bias_left<span class="sc">/</span>(data <span class="sc">%&gt;%</span> <span class="fu">nrow</span>() <span class="sc">%&gt;%</span> <span class="fu">sqrt</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.03154464</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Is the proportion of left flights different than expected due to chance</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(exit_gate_id <span class="sc">==</span> <span class="st">"left"</span>) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>(),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> <span class="fu">nrow</span>(),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.5</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct =</span> <span class="cn">FALSE</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    1-sample proportions test without continuity correction
+
+data:  data %&gt;% filter(exit_gate_id == "left") %&gt;% nrow() out of data %&gt;% nrow(), null probability 0.5
+X-squared = 324.53, df = 1, p-value &lt; 2.2e-16
+alternative hypothesis: true p is not equal to 0.5
+95 percent confidence interval:
+ 0.8098280 0.8640213
+sample estimates:
+        p 
+0.8387553 </code></pre>
+</div>
+</div>
+</section>
+<section id="overall-results-plots" class="level2">
+<h2 class="anchored" data-anchor-id="overall-results-plots">Overall Results Plots</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>overall_results_plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">add_gate_value_column</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">plot_overall_results</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>overall_results_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Overall%20Results-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>normalised_results_plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">add_gate_value_column</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">plot_normalised_overall_results</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>normalised_results_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Overall%20Results-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save_figure</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  normalised_results_plot,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"figures/figure_overall_results"</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">size_cm =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">15</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>png 
+  2 </code></pre>
+</div>
 </div>
 </section>
 <section id="contingency-tables-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="contingency-tables-analysis">Contingency Tables Analysis</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>count_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">count</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  trial_id,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  exit_gate_id</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">pivot_wider</span>(</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">names_from =</span> exit_gate_id,</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">values_from =</span> n</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">total =</span> left <span class="sc">+</span> right,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">normalised_left =</span> left<span class="sc">/</span>total,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">normalised_right =</span> right<span class="sc">/</span>total,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">normalised_total =</span> total<span class="sc">/</span>total</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_context_trial_id</span>(</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">convert_state_values</span>(</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>count_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">generate_count_data</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>contingency_table_expected <span class="ot">&lt;-</span> <span class="fu">as.table</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(bias_left<span class="sc">/</span><span class="dv">2</span>, bias_right<span class="sc">/</span><span class="dv">2</span>), </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(bias_left<span class="sc">/</span><span class="dv">2</span>, bias_right<span class="sc">/</span><span class="dv">2</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dimnames</span>(contingency_table_expected) <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Condition =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"right"</span>),</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Flight_Direction =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"right"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>contingency_table_expected</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>contingency_table_expected <span class="ot">&lt;-</span> <span class="fu">as.table</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(bias_left<span class="sc">/</span><span class="dv">2</span>, bias_right<span class="sc">/</span><span class="dv">2</span>), </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(bias_left<span class="sc">/</span><span class="dv">2</span>, bias_right<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">dimnames</span>(contingency_table_expected) <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Condition =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"right"</span>),</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Flight_Direction =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"right"</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>contingency_table_expected</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         Flight_Direction
-Condition left right
-    left  0.42  0.08
-    right 0.42  0.08</code></pre>
+Condition       left      right
+    left  0.41937765 0.08062235
+    right 0.41937765 0.08062235</code></pre>
 </div>
 </div>
 <section id="brightness" class="level3">
 <h3 class="anchored" data-anchor-id="brightness">Brightness</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>contingency_table_brightness <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_contingency_table</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  bg1,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  bg2</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>contingency_table_normal_brightness <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_normal_contingency_table</span>(</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  bg1,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  bg2</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>contingency_table_brightness</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>contingency_table_brightness <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_contingency_table</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  bg1,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  bg2</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>contingency_table_normal_brightness <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_normal_contingency_table</span>(</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  bg1,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  bg2</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>contingency_table_brightness</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      left right
 left   170    30
@@ -178,12 +316,12 @@ right  156    47</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>chi_squared_brightness <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_brightness,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">p=</span>contingency_table_expected,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct=</span><span class="cn">FALSE</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>chi_squared_brightness</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>chi_squared_brightness <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_brightness,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">p=</span>contingency_table_expected,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct=</span><span class="cn">FALSE</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>chi_squared_brightness</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Pearson's Chi-squared test
@@ -193,18 +331,19 @@ X-squared = 4.3324, df = 1, p-value = 0.03739</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_brightness</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_brightness,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">alternative =</span> <span class="st">"greater"</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Fisher's Exact Test for Count Data
 
 data:  contingency_table_brightness
-p-value = 0.04271
-alternative hypothesis: true odds ratio is not equal to 1
+p-value = 0.02504
+alternative hypothesis: true odds ratio is greater than 1
 95 percent confidence interval:
- 0.9998245 2.9426010
+ 1.082852      Inf
 sample estimates:
 odds ratio 
   1.704981 </code></pre>
@@ -212,32 +351,42 @@ odds ratio
 </div>
 <p>Relative risk of switching from flying right to flying left when the left background is light and right background is dark:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relative_risk_left</span>(contingency_table_normal_brightness)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_left</span>(contingency_table_normal_brightness)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.112009</code></pre>
 </div>
 </div>
-<p>Relative risk of switching from flying left to flying right when the left background is dark and right background is bright</p>
+<p>Relative risk of switching from flying left to flying right when the left background is dark and right background is light:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relative_risk_right</span>(contingency_table_normal_brightness)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_right</span>(contingency_table_normal_brightness)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.59177</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_switch_proability</span>(</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_brightness,</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  bias_left,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  bias_right</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7.681758</code></pre>
 </div>
 </div>
 </section>
 <section id="foreground-edge" class="level3">
 <h3 class="anchored" data-anchor-id="foreground-edge">Foreground Edge</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>contingency_table_edge <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_contingency_table</span>(</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  fg1,</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  fg2</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>contingency_table_normal_edge <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_normal_contingency_table</span>(</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  fg1,</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  fg2</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>contingency_table_edge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>contingency_table_edge <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_contingency_table</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  fg1,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  fg2</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>contingency_table_normal_edge <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">generate_normal_contingency_table</span>(</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  fg1,</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  fg2</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>contingency_table_edge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      left right
 left    97    10
@@ -245,12 +394,12 @@ right  170    27</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>chi_squared_edge <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_edge,</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">p=</span>contingency_table_expected,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct=</span><span class="cn">FALSE</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>chi_squared_edge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>chi_squared_edge <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_edge,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">p=</span>contingency_table_expected,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct=</span><span class="cn">FALSE</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>chi_squared_edge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Pearson's Chi-squared test
@@ -260,9 +409,9 @@ X-squared = 1.2329, df = 1, p-value = 0.2668</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_edge</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_edge</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Fisher's Exact Test for Count Data
@@ -277,61 +426,71 @@ odds ratio
   1.538513 </code></pre>
 </div>
 </div>
-<p>Relative risk of switching from flying right to flying left when the left background is white and right background is black:</p>
+<p>Relative risk of switching from flying right to flying left when the left foreground is black and right foreground is white:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relative_risk_left</span>(contingency_table_normal_edge)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_left</span>(contingency_table_normal_edge)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.049148</code></pre>
 </div>
 </div>
-<p>Relative risk of switching from flying left to flying right when the left background is black and right background is white</p>
+<p>Relative risk of switching from flying left to flying right when the left foreground is white and right foreground is black</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relative_risk_right</span>(contingency_table_normal_edge)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_right</span>(contingency_table_normal_edge)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.444128</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_switch_proability</span>(</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_edge,</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  bias_left,</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  bias_right</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12.92802</code></pre>
 </div>
 </div>
 </section>
 <section id="foreground-to-background-contrast" class="level3">
 <h3 class="anchored" data-anchor-id="foreground-to-background-contrast">Foreground to Background Contrast</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>contrast_data <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">add_contrast_columns</span>(</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>( <span class="co"># Makes contrast absolute</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_bg1_fg1 =</span> <span class="fu">abs</span>(contrast_bg1_fg1),</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_fg2_bg2 =</span> <span class="fu">abs</span>(contrast_fg2_bg2)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>(</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>( <span class="co"># Encodes 0 to be high contrast and 1 to be low contrast to be consistent</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_bg1_fg1 =</span> <span class="fu">fct_recode</span>(contrast_bg1_fg1, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"0"</span>, <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"1"</span>),</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_fg2_bg2 =</span> <span class="fu">fct_recode</span>(contrast_fg2_bg2, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"0"</span>, <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"1"</span>)</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>contingency_table_contrast <span class="ot">&lt;-</span> contrast_data <span class="sc">%&gt;%</span> <span class="fu">generate_contingency_table</span>(</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  contrast_bg1_fg1,</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  contrast_fg2_bg2</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>contingency_table_normal_contrast <span class="ot">&lt;-</span> contrast_data <span class="sc">%&gt;%</span> <span class="fu">generate_normal_contingency_table</span>(</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  contrast_bg1_fg1,</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  contrast_fg2_bg2</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>contingency_table_brightness</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>contrast_data <span class="ot">&lt;-</span> count_data <span class="sc">%&gt;%</span> <span class="fu">add_contrast_columns</span>(</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>( <span class="co"># Makes contrast absolute</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_bg1_fg1 =</span> <span class="fu">abs</span>(contrast_bg1_fg1),</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_fg2_bg2 =</span> <span class="fu">abs</span>(contrast_fg2_bg2)</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>(</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>( <span class="co"># Encodes 0 to be high contrast and 1 to be low contrast to be consistent</span></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_bg1_fg1 =</span> <span class="fu">fct_recode</span>(contrast_bg1_fg1, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"0"</span>, <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"1"</span>),</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_fg2_bg2 =</span> <span class="fu">fct_recode</span>(contrast_fg2_bg2, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"0"</span>, <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"1"</span>)</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>contingency_table_contrast <span class="ot">&lt;-</span> contrast_data <span class="sc">%&gt;%</span> <span class="fu">generate_contingency_table</span>(</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>  contrast_bg1_fg1,</span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>  contrast_fg2_bg2</span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a>contingency_table_normal_contrast <span class="ot">&lt;-</span> contrast_data <span class="sc">%&gt;%</span> <span class="fu">generate_normal_contingency_table</span>(</span>
+<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a>  contrast_bg1_fg1,</span>
+<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a>  contrast_fg2_bg2</span>
+<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-21"><a href="#cb55-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-22"><a href="#cb55-22" aria-hidden="true" tabindex="-1"></a>contingency_table_contrast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      left right
-left   170    30
-right  156    47</code></pre>
+left   307    48
+right  286    66</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up since it is formated weirdly and not useful anymore</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(contrast_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up since it is formated weirdly and not useful anymore</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(contrast_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>chi_squared_contrast <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_contrast,</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">p=</span>contingency_table_expected,</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct=</span><span class="cn">FALSE</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>chi_squared_contrast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>chi_squared_contrast <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_contrast,</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">p=</span>contingency_table_expected,</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct=</span><span class="cn">FALSE</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>chi_squared_contrast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Pearson's Chi-squared test
@@ -341,9 +500,9 @@ X-squared = 3.5731, df = 1, p-value = 0.05872</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_contrast</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_contrast</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Fisher's Exact Test for Count Data
@@ -360,83 +519,1051 @@ odds ratio
 </div>
 <p>Relative risk of switching from flying right to flying left when the left background has high contrast to the left foreground and right background has no contrast to the right foreground:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relative_risk_left</span>(contingency_table_normal_contrast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_left</span>(contingency_table_normal_contrast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.071006</code></pre>
 </div>
 </div>
 <p>Relative risk of switching from flying left to flying right when the left background is has no contrast to the left foregorund and right background is high contrast to the right foreground</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">relative_risk_right</span>(contingency_table_normal_contrast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_right</span>(contingency_table_normal_contrast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1.470573</code></pre>
 </div>
 </div>
-</section>
-</section>
-<section id="generalised-linear-model" class="level2">
-<h2 class="anchored" data-anchor-id="generalised-linear-model">Generalised Linear Model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>model_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">add_context_trial_id</span>(</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_context_bird_id</span>(</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_contrast_columns</span>(</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>(</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_switch_proability</span>(</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  contingency_table_contrast,</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  bias_left,</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  bias_right</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9.665395</code></pre>
+</div>
+</div>
+</section>
+<section id="unbias-foreground-to-background-contrast" class="level3">
+<h3 class="anchored" data-anchor-id="unbias-foreground-to-background-contrast">Unbias Foreground to Background Contrast</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>unbias_count_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">generate_even_state_data</span>(</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">generate_count_data</span>(</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  exit_gate_id <span class="sc">~</span> </span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    bg1 <span class="sc">+</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    fg1 <span class="sc">+</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    fg2 <span class="sc">+</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    bg2 <span class="sc">+</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    contrast_bg1_bg2 <span class="sc">+</span></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    contrast_bg1_fg1 <span class="sc">+</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>    contrast_fg1_fg2 <span class="sc">+</span></span>
-<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>    contrast_fg2_bg2,</span>
-<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> model_data,</span>
-<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link=</span><span class="st">"logit"</span>),</span>
-<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">weights =</span> <span class="fu">ifelse</span>(exit_gate_id <span class="sc">==</span> <span class="st">"left"</span>, <span class="dv">1</span><span class="sc">/</span>bias_left, <span class="dv">1</span><span class="sc">/</span>bias_right)</span>
-<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in eval(family$initialize): non-integer #successes in a binomial glm!</code></pre>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>unbias_contrast_data <span class="ot">&lt;-</span> unbias_count_data <span class="sc">%&gt;%</span> <span class="fu">add_contrast_columns</span>(</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>( <span class="co"># Makes contrast absolute</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_bg1_fg1 =</span> <span class="fu">abs</span>(contrast_bg1_fg1),</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_fg2_bg2 =</span> <span class="fu">abs</span>(contrast_fg2_bg2)</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>(</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>( <span class="co"># Encodes 0 to be high contrast and 1 to be low contrast to be consistent</span></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_bg1_fg1 =</span> <span class="fu">fct_recode</span>(contrast_bg1_fg1, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"0"</span>, <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"1"</span>),</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">contrast_fg2_bg2 =</span> <span class="fu">fct_recode</span>(contrast_fg2_bg2, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"0"</span>, <span class="st">"0"</span> <span class="ot">=</span> <span class="st">"1"</span>)</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>unbias_contingency_table_contrast <span class="ot">&lt;-</span> unbias_contrast_data <span class="sc">%&gt;%</span> <span class="fu">generate_contingency_table</span>(</span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>  contrast_bg1_fg1,</span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>  contrast_fg2_bg2</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a>unbias_contingency_table_normal_contrast <span class="ot">&lt;-</span> unbias_contrast_data <span class="sc">%&gt;%</span> <span class="fu">generate_normal_contingency_table</span>(</span>
+<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a>  contrast_bg1_fg1,</span>
+<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a>  contrast_fg2_bg2</span>
+<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb69-20"><a href="#cb69-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-21"><a href="#cb69-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-22"><a href="#cb69-22" aria-hidden="true" tabindex="-1"></a>unbias_contingency_table_contrast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      left right
+left   256    38
+right  235    56</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up since it is formated weirdly and not useful anymore</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(unbias_contrast_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>unbias_chi_squared_contrast <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  unbias_contingency_table_contrast,</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">p=</span>contingency_table_expected,</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">correct=</span><span class="cn">FALSE</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>unbias_chi_squared_contrast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  unbias_contingency_table_contrast
+X-squared = 4.3297, df = 1, p-value = 0.03745</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  unbias_contingency_table_contrast</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Fisher's Exact Test for Count Data
+
+data:  unbias_contingency_table_contrast
+p-value = 0.04266
+alternative hypothesis: true odds ratio is not equal to 1
+95 percent confidence interval:
+ 1.002577 2.588325
+sample estimates:
+odds ratio 
+  1.604058 </code></pre>
+</div>
+</div>
+<p>Relative risk of switching from flying right to flying left when the left background has high contrast to the left foreground and right background has no contrast to the right foreground:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_left</span>(unbias_contingency_table_normal_contrast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.076316</code></pre>
+</div>
+</div>
+<p>Relative risk of switching from flying left to flying right when the left background is has no contrast to the left foregorund and right background is high contrast to the right foreground</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_relative_risk_right</span>(unbias_contingency_table_normal_contrast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.522309</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_switch_proability</span>(</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  unbias_contingency_table_contrast,</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  bias_left,</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>  bias_right</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 11.82158</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="glm" class="level2">
+<h2 class="anchored" data-anchor-id="glm">GLM</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>model_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">add_context_trial_id</span>(</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_context_bird_id</span>(</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">add_bird_age</span>(</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"2025-04-01"</span> <span class="co"># Start date of experiment</span></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">factorise_data</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="bird-id" class="level3">
+<h3 class="anchored" data-anchor-id="bird-id">Bird ID</h3>
+<p>Four birds were never seen flying through my tunnel setup</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>bird_ids <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">as.character</span>(</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Number of unique individuals:"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Number of unique individuals:"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>bird_ids <span class="sc">%&gt;%</span> <span class="fu">length</span>(</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 55</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Individuals who were not observed flying through the tunnel:"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Individuals who were not observed flying through the tunnel:"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span><span class="sc">:</span><span class="dv">59</span>,</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  bird_ids</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  6 21 26 57</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>min_flights <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">"Number of individuals who flew through more than %d times:"</span>, min_flights)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Number of individuals who flew through more than 10 times:"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>exceeds_min_flights <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">count</span>(</span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>  n <span class="sc">&gt;=</span> min_flights</span>
+<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(</span>
+<span id="cb93-6"><a href="#cb93-6" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb93-7"><a href="#cb93-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">as.character</span>(</span>
+<span id="cb93-8"><a href="#cb93-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">unique</span>(</span>
+<span id="cb93-9"><a href="#cb93-9" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb93-10"><a href="#cb93-10" aria-hidden="true" tabindex="-1"></a>exceeds_min_flights <span class="sc">%&gt;%</span> <span class="fu">length</span>(</span>
+<span id="cb93-11"><a href="#cb93-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 18</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(min_flights)</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Number of individuals who flew through all trial state at least once"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Number of individuals who flew through all trial state at least once"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(</span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a>  bird_id,</span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>  trial_id</span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(</span>
+<span id="cb97-7"><a href="#cb97-7" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb97-8"><a href="#cb97-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb97-9"><a href="#cb97-9" aria-hidden="true" tabindex="-1"></a>  n <span class="sc">==</span> <span class="dv">8</span></span>
+<span id="cb97-10"><a href="#cb97-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>bird_id_plot <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(</span>
+<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">plot_bird_id</span>(</span>
+<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb99-5"><a href="#cb99-5" aria-hidden="true" tabindex="-1"></a>bird_id_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Bird%20ID%20Plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save_figure</span>(</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>  bird_id_plot,</span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"figures/figure_bird_id"</span>),</span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">15</span>)</span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>png 
+  2 </code></pre>
+</div>
+</div>
+</section>
+<section id="building-a-model" class="level3">
+<h3 class="anchored" data-anchor-id="building-a-model">Building a Model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a>null_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_null</span>()</span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"null"</span>,</span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> null_model<span class="sc">$</span>aic</span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-7"><a href="#cb102-7" aria-hidden="true" tabindex="-1"></a>background_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_background</span>()</span>
+<span id="cb102-8"><a href="#cb102-8" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-9"><a href="#cb102-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"background"</span>,</span>
+<span id="cb102-10"><a href="#cb102-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> background_model<span class="sc">$</span>aic</span>
+<span id="cb102-11"><a href="#cb102-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-12"><a href="#cb102-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-13"><a href="#cb102-13" aria-hidden="true" tabindex="-1"></a>background_interaction_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_background_interaction</span>()</span>
+<span id="cb102-14"><a href="#cb102-14" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-15"><a href="#cb102-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"background_interaction"</span>,</span>
+<span id="cb102-16"><a href="#cb102-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> background_interaction_model<span class="sc">$</span>aic</span>
+<span id="cb102-17"><a href="#cb102-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-18"><a href="#cb102-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-19"><a href="#cb102-19" aria-hidden="true" tabindex="-1"></a>foreground_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_foreground</span>()</span>
+<span id="cb102-20"><a href="#cb102-20" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-21"><a href="#cb102-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"foreground"</span>,</span>
+<span id="cb102-22"><a href="#cb102-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> foreground_model<span class="sc">$</span>aic</span>
+<span id="cb102-23"><a href="#cb102-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-24"><a href="#cb102-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-25"><a href="#cb102-25" aria-hidden="true" tabindex="-1"></a>foreground_interaction_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_foreground_interaction</span>()</span>
+<span id="cb102-26"><a href="#cb102-26" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-27"><a href="#cb102-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"foreground_interaction"</span>,</span>
+<span id="cb102-28"><a href="#cb102-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> foreground_interaction_model<span class="sc">$</span>aic</span>
+<span id="cb102-29"><a href="#cb102-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-30"><a href="#cb102-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-31"><a href="#cb102-31" aria-hidden="true" tabindex="-1"></a>full_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_full</span>()</span>
+<span id="cb102-32"><a href="#cb102-32" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-33"><a href="#cb102-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"full"</span>,</span>
+<span id="cb102-34"><a href="#cb102-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> full_model<span class="sc">$</span>aic</span>
+<span id="cb102-35"><a href="#cb102-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-36"><a href="#cb102-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-37"><a href="#cb102-37" aria-hidden="true" tabindex="-1"></a>background_foreground_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_background_foreground</span>()</span>
+<span id="cb102-38"><a href="#cb102-38" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-39"><a href="#cb102-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"background_foreground"</span>,</span>
+<span id="cb102-40"><a href="#cb102-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> background_foreground_model<span class="sc">$</span>aic</span>
+<span id="cb102-41"><a href="#cb102-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-42"><a href="#cb102-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-43"><a href="#cb102-43" aria-hidden="true" tabindex="-1"></a>background_foreground_between_interaction_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> </span>
+<span id="cb102-44"><a href="#cb102-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model_background_foreground_between_interaction</span>()</span>
+<span id="cb102-45"><a href="#cb102-45" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-46"><a href="#cb102-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"background_foreground_between_interaction"</span>,</span>
+<span id="cb102-47"><a href="#cb102-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> background_foreground_between_interaction_model<span class="sc">$</span>aic</span>
+<span id="cb102-48"><a href="#cb102-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-49"><a href="#cb102-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-50"><a href="#cb102-50" aria-hidden="true" tabindex="-1"></a>background_foreground_bg_interaction_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span></span>
+<span id="cb102-51"><a href="#cb102-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model_background_foreground_bg_interaction</span>()</span>
+<span id="cb102-52"><a href="#cb102-52" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-53"><a href="#cb102-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"background_foreground_bg_interaction"</span>,</span>
+<span id="cb102-54"><a href="#cb102-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> background_foreground_bg_interaction_model<span class="sc">$</span>aic</span>
+<span id="cb102-55"><a href="#cb102-55" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-56"><a href="#cb102-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-57"><a href="#cb102-57" aria-hidden="true" tabindex="-1"></a>background_foreground_fg_interaction_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span></span>
+<span id="cb102-58"><a href="#cb102-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model_background_foreground_fg_interaction</span>()</span>
+<span id="cb102-59"><a href="#cb102-59" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-60"><a href="#cb102-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"background_foreground_fg_interaction"</span>,</span>
+<span id="cb102-61"><a href="#cb102-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> background_foreground_fg_interaction_model<span class="sc">$</span>aic</span>
+<span id="cb102-62"><a href="#cb102-62" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-63"><a href="#cb102-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-64"><a href="#cb102-64" aria-hidden="true" tabindex="-1"></a>full_far_edge_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_full_far_egde</span>()</span>
+<span id="cb102-65"><a href="#cb102-65" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-66"><a href="#cb102-66" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"full_far_edge_model"</span>,</span>
+<span id="cb102-67"><a href="#cb102-67" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> full_far_edge_model<span class="sc">$</span>aic</span>
+<span id="cb102-68"><a href="#cb102-68" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-69"><a href="#cb102-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-70"><a href="#cb102-70" aria-hidden="true" tabindex="-1"></a>full_near_edge_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_full_near_egde</span>()</span>
+<span id="cb102-71"><a href="#cb102-71" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">add_row</span>(</span>
+<span id="cb102-72"><a href="#cb102-72" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_name =</span> <span class="st">"full_near_edge_model"</span>,</span>
+<span id="cb102-73"><a href="#cb102-73" aria-hidden="true" tabindex="-1"></a>  <span class="at">model_aic =</span> full_near_edge_model<span class="sc">$</span>aic</span>
+<span id="cb102-74"><a href="#cb102-74" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb102-75"><a href="#cb102-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-76"><a href="#cb102-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb102-77"><a href="#cb102-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Adds delta AIC</span></span>
+<span id="cb102-78"><a href="#cb102-78" aria-hidden="true" tabindex="-1"></a>aic_tibble <span class="ot">&lt;-</span> aic_tibble <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb102-79"><a href="#cb102-79" aria-hidden="true" tabindex="-1"></a>  <span class="at">null_delta_aic =</span> model_aic <span class="sc">-</span> <span class="fu">first</span>(model_aic)</span>
+<span id="cb102-80"><a href="#cb102-80" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Best model</span></span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>glm_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_glm</span>()</span>
+<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-glm(formula = exit_gate_id ~ bg1 + fg1 + fg2 + bg2 + contrast_bg1_bg2 + 
-    contrast_bg1_fg1 + contrast_fg1_fg2 + contrast_fg2_bg2, family = binomial(link = "logit"), 
-    data = model_data, weights = ifelse(exit_gate_id == "left", 
-        1/bias_left, 1/bias_right))
+glm(formula = exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + 
+    fg2 + (bg1 * fg1), family = binomial(link = "logit"), data = data)
 
-Coefficients: (6 not defined because of singularities)
+Coefficients:
                   Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept)       -0.39416    0.16853  -2.339 0.019347 *  
-bg1light          -0.23943    0.11337  -2.112 0.034690 *  
-fg1white          -0.03647    0.11912  -0.306 0.759508    
-fg2white           0.42981    0.11992   3.584 0.000338 ***
-bg2light           0.40460    0.11751   3.443 0.000575 ***
-contrast_bg1_bg20 -0.56595    0.11883  -4.763 1.91e-06 ***
-contrast_bg1_bg21       NA         NA      NA       NA    
-contrast_bg1_fg10  0.51112    0.11472   4.455 8.38e-06 ***
-contrast_bg1_fg11       NA         NA      NA       NA    
-contrast_fg1_fg20       NA         NA      NA       NA    
-contrast_fg1_fg21       NA         NA      NA       NA    
-contrast_fg2_bg20       NA         NA      NA       NA    
-contrast_fg2_bg21       NA         NA      NA       NA    
+(Intercept)        -2.1002     0.3025  -6.943 3.84e-12 ***
+bg1light           -0.2003     0.4022  -0.498  0.61848    
+bg2light            0.9477     0.3275   2.894  0.00381 ** 
+fg1white           -0.5190     0.3183  -1.631  0.10297    
+fg2white            0.4293     0.2427   1.769  0.07687 .  
+bg1light:bg2light  -1.0990     0.4755  -2.311  0.02082 *  
+bg1light:fg1white   0.9927     0.4532   2.191  0.02848 *  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 1966.4  on 706  degrees of freedom
-Residual deviance: 1896.3  on 700  degrees of freedom
-AIC: 1720.2
+    Null deviance: 624.60  on 706  degrees of freedom
+Residual deviance: 606.32  on 700  degrees of freedom
+AIC: 620.32
 
 Number of Fisher Scoring iterations: 5</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(glm_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+
+Model: binomial, link: logit
+
+Response: exit_gate_id
+
+Terms added sequentially (first to last)
+
+        Df Deviance Resid. Df Resid. Dev Pr(&gt;Chi)  
+NULL                      706     624.60           
+bg1      1   3.2208       705     621.38  0.07271 .
+bg2      1   1.8338       704     619.55  0.17567  
+fg1      1   0.5425       703     619.01  0.46140  
+fg2      1   1.5014       702     617.51  0.22046  
+bg1:bg2  1   6.2286       701     611.28  0.01257 *
+bg1:fg1  1   4.9611       700     606.32  0.02592 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>glm_model_roc_plot <span class="ot">&lt;-</span> glm_model <span class="sc">%&gt;%</span> <span class="fu">plot_roc</span>()</span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>roc_obj <span class="ot">&lt;-</span> pROC<span class="sc">::</span><span class="fu">roc</span>(model_data<span class="sc">$</span>exit_gate_id, <span class="fu">predict</span>(glm_model, <span class="at">type =</span> <span class="st">"response"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting levels: control = left, case = right</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting direction: controls &lt; cases</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(roc_obj, <span class="at">col =</span> <span class="st">"blue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/ROC%20Plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>pROC<span class="sc">::</span><span class="fu">auc</span>(roc_obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Area under the curve: 0.6211</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>glm_model_roc_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/ROC%20Plot-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save_figure</span>(</span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>  glm_model_roc_plot,</span>
+<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"figures/glm_model_rock_plot"</span>),</span>
+<span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">15</span>)</span>
+<span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>png 
+  2 </code></pre>
+</div>
+</div>
+</section>
+<section id="independence-verification" class="level3">
+<h3 class="anchored" data-anchor-id="independence-verification">Independence verification</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(bird <span class="cf">in</span> bird_ids) {</span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a>  model_data <span class="sc">%&gt;%</span></span>
+<span id="cb116-3"><a href="#cb116-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(</span>
+<span id="cb116-4"><a href="#cb116-4" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span>(bird_id <span class="sc">%in%</span> bird)</span>
+<span id="cb116-5"><a href="#cb116-5" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> <span class="fu">model_glm</span>(</span>
+<span id="cb116-6"><a href="#cb116-6" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> <span class="fu">summary</span>(</span>
+<span id="cb116-7"><a href="#cb116-7" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> <span class="fu">print</span>(</span>
+<span id="cb116-8"><a href="#cb116-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb116-9"><a href="#cb116-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>glm_model <span class="sc">%&gt;%</span> <span class="fu">check_model</span>(</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Easy%20Stats%20Check%20Model-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a>residuals_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">bird_id =</span> model_data<span class="sc">$</span>bird_id,</span>
+<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">bird_sex =</span> model_data<span class="sc">$</span>sex,</span>
+<span id="cb118-4"><a href="#cb118-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bird_phenotype =</span> model_data<span class="sc">$</span>phenotype,</span>
+<span id="cb118-5"><a href="#cb118-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#residual = residuals(glm_model, type = "working")</span></span>
+<span id="cb118-6"><a href="#cb118-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">residual =</span> glm_model<span class="sc">$</span>residuals,</span>
+<span id="cb118-7"><a href="#cb118-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">datetime =</span> model_data<span class="sc">$</span>datetime</span>
+<span id="cb118-8"><a href="#cb118-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb118-9"><a href="#cb118-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">bird_id =</span> <span class="fu">if_else</span>(</span>
+<span id="cb118-10"><a href="#cb118-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(bird_id),</span>
+<span id="cb118-11"><a href="#cb118-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(bird_sex, bird_phenotype),</span>
+<span id="cb118-12"><a href="#cb118-12" aria-hidden="true" tabindex="-1"></a>    bird_id</span>
+<span id="cb118-13"><a href="#cb118-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb118-14"><a href="#cb118-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">fix_residuals_factor_levels</span>(</span>
+<span id="cb118-15"><a href="#cb118-15" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(</span>
+<span id="cb118-16"><a href="#cb118-16" aria-hidden="true" tabindex="-1"></a>  bird_id</span>
+<span id="cb118-17"><a href="#cb118-17" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb118-18"><a href="#cb118-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">flight_id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(model_data)),</span>
+<span id="cb118-19"><a href="#cb118-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb118-20"><a href="#cb118-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-21"><a href="#cb118-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-22"><a href="#cb118-22" aria-hidden="true" tabindex="-1"></a>residuals_plot <span class="ot">&lt;-</span> residuals_data <span class="sc">%&gt;%</span> <span class="fu">plot_residuals</span>()</span>
+<span id="cb118-23"><a href="#cb118-23" aria-hidden="true" tabindex="-1"></a>residuals_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Residual%20Plot-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>residuals_plot <span class="sc">%&gt;%</span> <span class="fu">save_figure</span>(</span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"figures/residuals_plot"</span>),</span>
+<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">25</span>,<span class="dv">15</span>)</span>
+<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>png 
+  2 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>residuals_datetime_plot <span class="ot">&lt;-</span> residuals_data <span class="sc">%&gt;%</span> <span class="fu">plot_datetime_residuals</span>()</span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>residuals_datetime_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Residual%20Plot-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>residuals_datetime_plot <span class="sc">%&gt;%</span> <span class="fu">save_figure</span>(</span>
+<span id="cb122-2"><a href="#cb122-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"figures/residuals_datetime_plot"</span>),</span>
+<span id="cb122-3"><a href="#cb122-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">25</span>,<span class="dv">15</span>)</span>
+<span id="cb122-4"><a href="#cb122-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>png 
+  2 </code></pre>
+</div>
+</div>
+</section>
+<section id="subset-models" class="level3">
+<h3 class="anchored" data-anchor-id="subset-models">Subset Models</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a>brightness_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a>  trial_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>)</span>
+<span id="cb124-3"><a href="#cb124-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">model_subset</span>()</span>
+<span id="cb124-4"><a href="#cb124-4" aria-hidden="true" tabindex="-1"></a>brightness_model <span class="sc">%&gt;%</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = exit_gate_id ~ bg1 + fg1 + (bg1 * fg1), family = binomial(link = "logit"), 
+    data = data)
+
+Coefficients:
+                    Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -1.1994170  0.2432141  -4.932 8.16e-07 ***
+bg1light          -0.9978076  0.4273050  -2.335   0.0195 *  
+fg1white          -0.0005478  0.3334684  -0.002   0.9987    
+bg1light:fg1white  0.7536584  0.5417496   1.391   0.1642    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 393.14  on 402  degrees of freedom
+Residual deviance: 385.47  on 399  degrees of freedom
+AIC: 393.47
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>brightness_model <span class="sc">%&gt;%</span> <span class="fu">coef</span>(</span>
+<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">exp</span>(</span>
+<span id="cb126-3"><a href="#cb126-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept)          bg1light          fg1white bg1light:fg1white 
+        0.3013699         0.3686869         0.9994524         2.1247591 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">/</span>brightness_model <span class="sc">%&gt;%</span> <span class="fu">coef</span>(</span>
+<span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">exp</span>(</span>
+<span id="cb128-3"><a href="#cb128-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept)          bg1light          fg1white bg1light:fg1white 
+        3.3181818         2.7123287         1.0005479         0.4706416 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a>edge_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
+<span id="cb130-2"><a href="#cb130-2" aria-hidden="true" tabindex="-1"></a>  trial_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>)</span>
+<span id="cb130-3"><a href="#cb130-3" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">model_subset</span>()</span>
+<span id="cb130-4"><a href="#cb130-4" aria-hidden="true" tabindex="-1"></a>edge_model <span class="sc">%&gt;%</span> <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = exit_gate_id ~ bg1 + fg1 + (bg1 * fg1), family = binomial(link = "logit"), 
+    data = data)
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -1.6094     0.2739  -5.877 4.18e-09 ***
+bg1light           -0.4925     0.4207  -1.171   0.2418    
+fg1white           -1.2622     0.6536  -1.931   0.0535 .  
+bg1light:fg1white   1.5259     0.8335   1.831   0.0672 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 225.15  on 303  degrees of freedom
+Residual deviance: 220.23  on 300  degrees of freedom
+AIC: 228.23
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a>edge_model <span class="sc">%&gt;%</span> <span class="fu">coef</span>(</span>
+<span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">exp</span>(</span>
+<span id="cb132-3"><a href="#cb132-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept)          bg1light          fg1white bg1light:fg1white 
+        0.2000000         0.6111111         0.2830189         4.5991735 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">/</span>edge_model <span class="sc">%&gt;%</span> <span class="fu">coef</span>(</span>
+<span id="cb134-2"><a href="#cb134-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">exp</span>(</span>
+<span id="cb134-3"><a href="#cb134-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept)          bg1light          fg1white bg1light:fg1white 
+        5.0000000         1.6363636         3.5333333         0.2174304 </code></pre>
+</div>
+</div>
+</section>
+<section id="glm-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="glm-interpretation">GLM Interpretation</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + 
+    fg2 + (bg1 * fg1), family = binomial(link = "logit"), data = data)
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -2.1002     0.3025  -6.943 3.84e-12 ***
+bg1light           -0.2003     0.4022  -0.498  0.61848    
+bg2light            0.9477     0.3275   2.894  0.00381 ** 
+fg1white           -0.5190     0.3183  -1.631  0.10297    
+fg2white            0.4293     0.2427   1.769  0.07687 .  
+bg1light:bg2light  -1.0990     0.4755  -2.311  0.02082 *  
+bg1light:fg1white   0.9927     0.4532   2.191  0.02848 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 624.60  on 706  degrees of freedom
+Residual deviance: 606.32  on 700  degrees of freedom
+AIC: 620.32
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>right_odds_coef <span class="ot">&lt;-</span> glm_model <span class="sc">%&gt;%</span> <span class="fu">coef</span>(</span>
+<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">exp</span>(</span>
+<span id="cb138-3"><a href="#cb138-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb138-4"><a href="#cb138-4" aria-hidden="true" tabindex="-1"></a>right_odds_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept)          bg1light          bg2light          fg1white 
+        0.1224278         0.8184931         2.5798163         0.5950878 
+         fg2white bg1light:bg2light bg1light:fg1white 
+        1.5362285         0.3331929         2.6985254 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>left_odds_coef <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>right_odds_coef</span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a>left_odds_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      (Intercept)          bg1light          bg2light          fg1white 
+        8.1680798         1.2217573         0.3876245         1.6804242 
+         fg2white bg1light:bg2light bg1light:fg1white 
+        0.6509448         3.0012640         0.3705728 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a>fully_factored <span class="ot">&lt;-</span> <span class="fu">expand_grid</span>(</span>
+<span id="cb142-2"><a href="#cb142-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg1 =</span> <span class="fu">c</span>(<span class="st">"light"</span>, <span class="st">"dark"</span>),</span>
+<span id="cb142-3"><a href="#cb142-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg2 =</span> <span class="fu">c</span>(<span class="st">"light"</span>, <span class="st">"dark"</span>),</span>
+<span id="cb142-4"><a href="#cb142-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fg1 =</span> <span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>),</span>
+<span id="cb142-5"><a href="#cb142-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">fg2 =</span> <span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>)</span>
+<span id="cb142-6"><a href="#cb142-6" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb142-7"><a href="#cb142-7" aria-hidden="true" tabindex="-1"></a>fully_factored <span class="ot">&lt;-</span> fully_factored <span class="sc">%&gt;%</span> <span class="fu">add_column</span>(</span>
+<span id="cb142-8"><a href="#cb142-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">right_odds_ratio =</span> glm_model <span class="sc">%&gt;%</span> <span class="fu">predict</span>(</span>
+<span id="cb142-9"><a href="#cb142-9" aria-hidden="true" tabindex="-1"></a>    fully_factored</span>
+<span id="cb142-10"><a href="#cb142-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">exp</span>(),</span>
+<span id="cb142-11"><a href="#cb142-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">left_odds_ratio =</span> <span class="dv">1</span><span class="sc">/</span>right_odds_ratio,</span>
+<span id="cb142-12"><a href="#cb142-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">left_percent =</span> left_odds_ratio <span class="sc">/</span> (<span class="dv">1</span><span class="sc">+</span>left_odds_ratio) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb142-13"><a href="#cb142-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">right_percent =</span> <span class="dv">100</span><span class="sc">-</span>left_percent</span>
+<span id="cb142-14"><a href="#cb142-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">relocate</span>(</span>
+<span id="cb142-15"><a href="#cb142-15" aria-hidden="true" tabindex="-1"></a>  left_odds_ratio,</span>
+<span id="cb142-16"><a href="#cb142-16" aria-hidden="true" tabindex="-1"></a>  right_odds_ratio,</span>
+<span id="cb142-17"><a href="#cb142-17" aria-hidden="true" tabindex="-1"></a>  bg1,</span>
+<span id="cb142-18"><a href="#cb142-18" aria-hidden="true" tabindex="-1"></a>  fg1,</span>
+<span id="cb142-19"><a href="#cb142-19" aria-hidden="true" tabindex="-1"></a>  fg2,</span>
+<span id="cb142-20"><a href="#cb142-20" aria-hidden="true" tabindex="-1"></a>  bg2</span>
+<span id="cb142-21"><a href="#cb142-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb142-22"><a href="#cb142-22" aria-hidden="true" tabindex="-1"></a>fully_factored</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 8
+   left_odds_ratio right_odds_ratio bg1   fg1   fg2   bg2   left_percent
+             &lt;dbl&gt;            &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;
+ 1            4.71           0.212  light white white light         82.5
+ 2            7.23           0.138  light white black light         87.8
+ 3            7.56           0.132  light black white light         88.3
+ 4           11.6            0.0861 light black black light         92.1
+ 5            4.05           0.247  light white white dark          80.2
+ 6            6.21           0.161  light white black dark          86.1
+ 7            6.50           0.154  light black white dark          86.7
+ 8            9.98           0.100  light black black dark          90.9
+ 9            3.46           0.289  dark  white white light         77.6
+10            5.32           0.188  dark  white black light         84.2
+11            2.06           0.485  dark  black white light         67.3
+12            3.17           0.316  dark  black black light         76.0
+13            8.93           0.112  dark  white white dark          89.9
+14           13.7            0.0729 dark  white black dark          93.2
+15            5.32           0.188  dark  black white dark          84.2
+16            8.17           0.122  dark  black black dark          89.1
+# ℹ 1 more variable: right_percent &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a>glm_model <span class="sc">%&gt;%</span> <span class="fu">predict</span>(</span>
+<span id="cb144-2"><a href="#cb144-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb144-3"><a href="#cb144-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg1 =</span> <span class="st">"dark"</span>,</span>
+<span id="cb144-4"><a href="#cb144-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fg1 =</span> <span class="st">"black"</span>,</span>
+<span id="cb144-5"><a href="#cb144-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">fg2 =</span> <span class="st">"black"</span>,</span>
+<span id="cb144-6"><a href="#cb144-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">bg2 =</span> <span class="st">"light"</span></span>
+<span id="cb144-7"><a href="#cb144-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb144-8"><a href="#cb144-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span> <span class="fu">exp</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1 
+0.3158412 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="glmm" class="level2">
+<h2 class="anchored" data-anchor-id="glmm">GLMM</h2>
+<section id="bird-id-1" class="level3">
+<h3 class="anchored" data-anchor-id="bird-id-1">Bird ID</h3>
+<p>Number of birds fully identified</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a>model_data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(bird_id) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 473</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a>bird_id_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(bird_id) <span class="sc">%&gt;%</span> <span class="fu">model_bird_id</span>()</span>
+<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bird_id_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + fg2 + (bg1 * fg1) +  
+    (1 | bird_id)
+   Data: data
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    431.0     464.3    -207.5     415.0       465 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.3450 -0.4695 -0.3564 -0.2530  3.8517 
+
+Random effects:
+ Groups  Name        Variance Std.Dev.
+ bird_id (Intercept) 0.6925   0.8322  
+Number of obs: 473, groups:  bird_id, 55
+
+Fixed effects:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -2.3226     0.4210  -5.517 3.45e-08 ***
+bg1light            0.2374     0.4997   0.475   0.6347    
+bg2light            1.0485     0.4224   2.482   0.0131 *  
+fg1white           -0.5328     0.4073  -1.308   0.1909    
+fg2white            0.4889     0.3094   1.580   0.1141    
+bg1light:bg2light  -1.3818     0.6144  -2.249   0.0245 *  
+bg1light:fg1white   0.7295     0.5619   1.298   0.1942    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) bg1lgh bg2lgh fg1wht fg2wht bg1l:2
+bg1light    -0.587                                   
+bg2light    -0.689  0.486                            
+fg1white     0.031  0.107 -0.371                     
+fg2white    -0.507  0.121  0.315 -0.396              
+bg1lght:bg2  0.508 -0.664 -0.713  0.269 -0.263       
+bg1lght:fg1  0.050 -0.494  0.222 -0.669  0.146  0.000</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(bird_id_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+        npar Sum Sq Mean Sq F value
+bg1        1 0.9107  0.9107  0.9107
+bg2        1 0.5778  0.5778  0.5778
+fg1        1 0.3486  0.3486  0.3486
+fg2        1 0.6332  0.6332  0.6332
+bg1:bg2    1 5.0246  5.0246  5.0246
+bg1:fg1    1 1.6796  1.6796  1.6796</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb152"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb152-1"><a href="#cb152-1" aria-hidden="true" tabindex="-1"></a>mixed_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(bird_id_model)<span class="sc">$</span>bird_id <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb152-2"><a href="#cb152-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">across</span>(<span class="fu">everything</span>(), exp),</span>
+<span id="cb152-3"><a href="#cb152-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">bird_id =</span> <span class="fu">sort</span>(<span class="fu">as.numeric</span>(bird_ids))</span>
+<span id="cb152-4"><a href="#cb152-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb153"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb153-1"><a href="#cb153-1" aria-hidden="true" tabindex="-1"></a>comparison_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(bird_id) <span class="sc">%&gt;%</span> <span class="fu">model_glm</span>()</span>
+<span id="cb153-2"><a href="#cb153-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(comparison_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + 
+    fg2 + (bg1 * fg1), family = binomial(link = "logit"), data = data)
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -2.04434    0.36263  -5.638 1.72e-08 ***
+bg1light           0.09232    0.46167   0.200   0.8415    
+bg2light           0.98765    0.39230   2.518   0.0118 *  
+fg1white          -0.47220    0.37771  -1.250   0.2112    
+fg2white           0.37479    0.28619   1.310   0.1903    
+bg1light:bg2light -1.20646    0.56175  -2.148   0.0317 *  
+bg1light:fg1white  0.78687    0.51914   1.516   0.1296    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 448.54  on 472  degrees of freedom
+Residual deviance: 437.66  on 466  degrees of freedom
+AIC: 451.66
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a>bird_id_model <span class="sc">%&gt;%</span> <span class="fu">check_model</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="masters-Analysis_files/figure-html/Check%20GLMM-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="bird-mass" class="level3">
+<h3 class="anchored" data-anchor-id="bird-mass">Bird Mass</h3>
+<p>(same sample size as bird ID)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb156"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb156-1"><a href="#cb156-1" aria-hidden="true" tabindex="-1"></a>bird_mass_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_bird_mass</span>()</span>
+<span id="cb156-2"><a href="#cb156-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bird_mass_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + fg2 + (bg1 * fg1) +  
+    (1 | mass_g)
+   Data: data
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    389.2     421.5    -186.6     373.2       412 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.1783 -0.4685 -0.3772 -0.2768  3.5201 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ mass_g (Intercept) 0.5405   0.7352  
+Number of obs: 420, groups:  mass_g, 33
+
+Fixed effects:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -2.1574     0.4349  -4.961 7.01e-07 ***
+bg1light            0.3016     0.5021   0.601   0.5481    
+bg2light            0.9835     0.4411   2.230   0.0258 *  
+fg1white           -0.4379     0.4266  -1.026   0.3047    
+fg2white            0.2546     0.3111   0.818   0.4132    
+bg1light:bg2light  -1.1751     0.6204  -1.894   0.0582 .  
+bg1light:fg1white   0.6409     0.5712   1.122   0.2619    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) bg1lgh bg2lgh fg1wht fg2wht bg1l:2
+bg1light    -0.612                                   
+bg2light    -0.672  0.500                            
+fg1white    -0.018  0.126 -0.348                     
+fg2white    -0.485  0.118  0.288 -0.359              
+bg1lght:bg2  0.505 -0.661 -0.734  0.261 -0.252       
+bg1lght:fg1  0.081 -0.478  0.220 -0.695  0.126 -0.022</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb158"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(bird_mass_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+        npar Sum Sq Mean Sq F value
+bg1        1 0.2621  0.2621  0.2621
+bg2        1 0.8293  0.8293  0.8293
+fg1        1 0.1665  0.1665  0.1665
+fg2        1 0.0389  0.0389  0.0389
+bg1:bg2    1 3.4214  3.4214  3.4214
+bg1:fg1    1 1.2335  1.2335  1.2335</code></pre>
+</div>
+</div>
+</section>
+<section id="bird-age" class="level3">
+<h3 class="anchored" data-anchor-id="bird-age">Bird Age</h3>
+<p>(same sample size as bird ID)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb160"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" aria-hidden="true" tabindex="-1"></a>bird_age_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_bird_age</span>()</span>
+<span id="cb160-2"><a href="#cb160-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bird_age_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + fg2 + (bg1 * fg1) +  
+    (1 | age_days)
+   Data: data
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    434.3     467.6    -209.2     418.3       465 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.3206 -0.4722 -0.3583 -0.2516  3.4310 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ age_days (Intercept) 0.6266   0.7916  
+Number of obs: 473, groups:  age_days, 42
+
+Fixed effects:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -2.3326     0.4183  -5.576 2.45e-08 ***
+bg1light            0.1916     0.4864   0.394   0.6936    
+bg2light            1.0431     0.4120   2.532   0.0114 *  
+fg1white           -0.5347     0.3972  -1.346   0.1782    
+fg2white            0.4911     0.3021   1.626   0.1040    
+bg1light:bg2light  -1.3284     0.5996  -2.215   0.0267 *  
+bg1light:fg1white   0.7529     0.5459   1.379   0.1678    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) bg1lgh bg2lgh fg1wht fg2wht bg1l:2
+bg1light    -0.573                                   
+bg2light    -0.675  0.486                            
+fg1white     0.033  0.103 -0.373                     
+fg2white    -0.501  0.120  0.313 -0.397              
+bg1lght:bg2  0.492 -0.664 -0.713  0.272 -0.260       
+bg1lght:fg1  0.047 -0.491  0.223 -0.668  0.145 -0.001</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb162"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(bird_age_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+        npar Sum Sq Mean Sq F value
+bg1        1 1.0151  1.0151  1.0151
+bg2        1 0.6831  0.6831  0.6831
+fg1        1 0.3795  0.3795  0.3795
+fg2        1 0.7168  0.7168  0.7168
+bg1:bg2    1 4.7582  4.7582  4.7582
+bg1:fg1    1 1.8526  1.8526  1.8526</code></pre>
+</div>
+</div>
+</section>
+<section id="bird-sex" class="level3">
+<h3 class="anchored" data-anchor-id="bird-sex">Bird Sex</h3>
+<p>Number of birds identified to sex</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb164"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb164-1"><a href="#cb164-1" aria-hidden="true" tabindex="-1"></a>model_data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(sex) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 535</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb166"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb166-1"><a href="#cb166-1" aria-hidden="true" tabindex="-1"></a>bird_sex_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_bird_sex</span>()</span>
+<span id="cb166-2"><a href="#cb166-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bird_sex_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + 
+    fg2 + (bg1 * fg1) + sex, family = binomial(link = "logit"), 
+    data = data)
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -1.86622    0.36966  -5.048 4.45e-07 ***
+bg1light          -0.27915    0.43536  -0.641   0.5214    
+bg2light           0.77180    0.34277   2.252   0.0243 *  
+fg1white          -0.37207    0.33365  -1.115   0.2648    
+fg2white           0.32324    0.25584   1.263   0.2064    
+sexmale            0.01787    0.25657   0.070   0.9445    
+bg1light:bg2light -0.77094    0.50416  -1.529   0.1262    
+bg1light:fg1white  0.89647    0.48671   1.842   0.0655 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 512.49  on 534  degrees of freedom
+Residual deviance: 501.22  on 527  degrees of freedom
+  (172 observations deleted due to missingness)
+AIC: 517.22
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb168"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb168-1"><a href="#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(bird_sex_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+
+Model: binomial, link: logit
+
+Response: exit_gate_id
+
+Terms added sequentially (first to last)
+
+        Df Deviance Resid. Df Resid. Dev Pr(&gt;Chi)  
+NULL                      534     512.49           
+bg1      1   2.0272       533     510.46  0.15451  
+bg2      1   1.5931       532     508.87  0.20688  
+fg1      1   0.6397       531     508.23  0.42382  
+fg2      1   0.7410       530     507.49  0.38934  
+sex      1   0.0024       529     507.48  0.96065  
+bg1:bg2  1   2.7813       528     504.70  0.09537 .
+bg1:fg1  1   3.4859       527     501.22  0.06189 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="bird-phenotype" class="level3">
+<h3 class="anchored" data-anchor-id="bird-phenotype">Bird Phenotype</h3>
+<p>Number of birds identified to phenotype</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb170"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb170-1"><a href="#cb170-1" aria-hidden="true" tabindex="-1"></a>model_data <span class="sc">%&gt;%</span> <span class="fu">drop_na</span>(phenotype) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 523</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb172"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb172-1"><a href="#cb172-1" aria-hidden="true" tabindex="-1"></a>bird_phenotype_model <span class="ot">&lt;-</span> model_data <span class="sc">%&gt;%</span> <span class="fu">model_bird_phenotype</span>()</span>
+<span id="cb172-2"><a href="#cb172-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bird_phenotype_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: exit_gate_id ~ bg1 + bg2 + (bg1 * bg2) + fg1 + fg2 + (bg1 * fg1) +  
+    (1 | phenotype)
+   Data: data
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    504.5     538.6    -244.2     488.5       515 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-0.7436 -0.5128 -0.4165 -0.3008  3.4206 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ phenotype (Intercept) 0.1387   0.3725  
+Number of obs: 523, groups:  phenotype, 7
+
+Fixed effects:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)       -2.12587    0.39712  -5.353 8.64e-08 ***
+bg1light          -0.08265    0.43813  -0.189   0.8504    
+bg2light           0.87319    0.35331   2.471   0.0135 *  
+fg1white          -0.29833    0.34335  -0.869   0.3849    
+fg2white           0.40962    0.26415   1.551   0.1210    
+bg1light:bg2light -0.98697    0.51978  -1.899   0.0576 .  
+bg1light:fg1white  0.70791    0.49441   1.432   0.1522    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) bg1lgh bg2lgh fg1wht fg2wht bg1l:2
+bg1light    -0.496                                   
+bg2light    -0.628  0.444                            
+fg1white    -0.033  0.137 -0.338                     
+fg2white    -0.465  0.074  0.299 -0.370              
+bg1lght:bg2  0.436 -0.656 -0.685  0.236 -0.221       
+bg1lght:fg1  0.061 -0.532  0.205 -0.652  0.151  0.032</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb174"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb174-1"><a href="#cb174-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(bird_phenotype_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+        npar Sum Sq Mean Sq F value
+bg1        1 2.1735  2.1735  2.1735
+bg2        1 1.1503  1.1503  1.1503
+fg1        1 1.3305  1.3305  1.3305
+fg2        1 0.8640  0.8640  0.8640
+bg1:bg2    1 3.7703  3.7703  3.7703
+bg1:fg1    1 2.0450  2.0450  2.0450</code></pre>
+</div>
+</div>
+</section>
 </section>
 </section>
 

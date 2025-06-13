@@ -12,13 +12,25 @@ Data cleaning and statistical analysis for my MBiol project.
 #| include: false
 
 library(tidyverse)
+library(easystats)
 library(here)
+library(lme4)
+library(anytime)
+library(viridis)
+
+## Some packages used but not needed to be libraried as only one function used
+# install.packages("scales")
+# install.packages("purrr")
+# install.packages("fs")
 
 # Loads all defined functions
 function.sources = list.files(
   c(
+    here("functions/data_cleaning"),
     here("functions/data_manipulation"),
-    here("functions/statistics")
+    here("functions/statistics"),
+    here("functions/models"),
+    here("functions/plots")
   ), 
   pattern="*.R$",
   full.names=TRUE, 
@@ -28,9 +40,60 @@ sapply(function.sources,source)
 rm(function.sources)
 ```
 
+```{r}
+#| label: Anytime Datetime Format Fix
+#| echo: False
+#| include: False
+
+# Removes American style mm/dd/yyyy
+removeFormats(
+  "%m/%d/%Y"
+)
+# Adds format of bird ages dd/mm/yyyy
+addFormats(
+  "%d/%m/%Y"
+)
+```
+
+```{r}
+#| label: Random Seed
+set.seed(121) # Reproducibility
+```
+
 ## Data Cleaning
 
-TODO- move cleaning code to this project
+```{r}
+#| label: Load Raw Data
+#| output: FALSE
+
+raw_data <- collate_raw_data(
+  here("data/multi_file_raw")
+)
+```
+```{r}
+#| label: Save Raw Data
+
+raw_data %>% write_csv(here("data/raw_data.csv"))
+```
+
+```{r}
+#| label: Raw Data Cleaning Pipe
+
+cleaned_gate_data <- raw_data %>% factorise_data(
+) %>% clean_duplicate_times(
+) %>% validate_flights(
+) %>% pair_valid_flights(
+) %>% validate_direction(
+) %>% add_human_datetime(
+)
+```
+
+
+```{r}
+#| label: Save Cleaned Data
+
+cleaned_gate_data %>% write_csv(here("data/cleaned_gate_data.csv"))
+```
 
 ## Data Reading
 
@@ -46,32 +109,112 @@ data <- read_csv(
 ```
 ## Trial ID Bias
 
-TODO move code showing trial bias has no effect on left right bias here
+```{r}
+#| label: Trial ID Plot
+
+trial_id_plot <- plot_trial_ids(data)
+trial_id_plot
+
+save_figure(
+  trial_id_plot,
+  here("figures/figure_trial_id_plot"),
+  c(20, 15)
+)
+```
 
 ```{r}
-bias_left = 0.84
-bias_right = 1-bias_left
+#| label: Trial State Inbalance
+state_inbalance <- data %>% add_context_trial_id(
+) %>% factorise_data() %>% generate_state_bias_tibble()
+state_inbalance
 ```
+
+```{r}
+#| label: Bootstrap Trial State Inbalance
+#| execute:
+#|     cache: true
+
+reps = 500
+
+bias_bootstrap <- replicate(
+  reps,
+  data %>% generate_even_state_data(
+  ) %>% calculate_left_bias()
+)
+
+mean(bias_bootstrap)
+sd(bias_bootstrap)
+```
+
+```{r}
+#| label: Bootstrap Trial State Inbalance- Full Removal
+#| execute:
+#|     cache: true
+
+reps = 500
+
+bias_bootstrap1 <- replicate(
+  reps,
+  data %>% generate_even_trial_data(
+  ) %>% calculate_left_bias()
+)
+
+mean(bias_bootstrap1)
+sd(bias_bootstrap1)
+
+```
+
+```{r}
+#| label: Left/Right Bias
+
+bias_left = data %>% calculate_left_bias()
+bias_right = 1-bias_left
+
+bias_left/(data %>% nrow() %>% sqrt())
+```
+
+```{r}
+#| label: Bias signifance test
+
+# Is the proportion of left flights different than expected due to chance
+prop.test(
+  data %>% filter(exit_gate_id == "left") %>% nrow(),
+  data %>% nrow(),
+  0.5,
+  correct = FALSE
+)
+```
+
+
+## Overall Results Plots
+
+```{r}
+#| label: Overall Results
+
+overall_results_plot <- data %>% add_gate_value_column(
+) %>% plot_overall_results(
+)
+overall_results_plot
+
+normalised_results_plot <- data %>% add_gate_value_column(
+) %>% plot_normalised_overall_results(
+)
+normalised_results_plot
+
+save_figure(
+  normalised_results_plot,
+  here("figures/figure_overall_results"),
+  size_cm = c(20,15)
+)
+```
+
 
 ## Contingency Tables Analysis
 
 ```{r}
 #| label: Count data
 
-count_data <- data %>% count(
-  trial_id,
-  exit_gate_id
-) %>% pivot_wider(
-  names_from = exit_gate_id,
-  values_from = n
-) %>% mutate(
-  total = left + right,
-  normalised_left = left/total,
-  normalised_right = right/total,
-  normalised_total = total/total
-) %>% add_context_trial_id(
-) %>% convert_state_values(
-) %>% factorise_data()
+count_data <- data %>% generate_count_data()
 ```
 
 ```{r}
@@ -123,7 +266,8 @@ chi_squared_brightness
 #| label: Fisher's Exact Brightness
 
 fisher.test(
-  contingency_table_brightness
+  contingency_table_brightness,
+  alternative = "greater"
 )
 
 ```
@@ -132,13 +276,22 @@ fisher.test(
 Relative risk of switching from flying right to flying left when the left background is light and right background is dark:
 ```{r}
 #| label: Relative Risk Left Brightness
-relative_risk_left(contingency_table_normal_brightness)
+calculate_relative_risk_left(contingency_table_normal_brightness)
 ```
 
-Relative risk of switching from flying left to flying right when the left background is dark and right background is bright
+Relative risk of switching from flying left to flying right when the left background is dark and right background is light:
 ```{r}
 #| label: Relative Risk Right Brightness
-relative_risk_right(contingency_table_normal_brightness)
+calculate_relative_risk_right(contingency_table_normal_brightness)
+```
+
+```{r}
+#| label: Switch Probability Brightness
+calculate_switch_proability(
+  contingency_table_brightness,
+  bias_left,
+  bias_right
+) * 100
 ```
 
 ### Foreground Edge
@@ -177,16 +330,25 @@ fisher.test(
 )
 
 ```
-Relative risk of switching from flying right to flying left when the left background is white and right background is black:
+Relative risk of switching from flying right to flying left when the left foreground is black and right foreground is white:
 ```{r}
 #| label: Relative Risk Left Edge
-relative_risk_left(contingency_table_normal_edge)
+calculate_relative_risk_left(contingency_table_normal_edge)
 ```
 
-Relative risk of switching from flying left to flying right when the left background is black and right background is white
+Relative risk of switching from flying left to flying right when the left foreground is white and right foreground is black
 ```{r}
 #| label: Relative Risk Right Edge
-relative_risk_right(contingency_table_normal_edge)
+calculate_relative_risk_right(contingency_table_normal_edge)
+```
+
+```{r}
+#| label: Switch Probability Edge
+calculate_switch_proability(
+  contingency_table_edge,
+  bias_left,
+  bias_right
+) * 100
 ```
 
 ### Foreground to Background Contrast
@@ -214,7 +376,7 @@ contingency_table_normal_contrast <- contrast_data %>% generate_normal_contingen
 )
 
 
-contingency_table_brightness
+contingency_table_contrast
 
 # Clean up since it is formated weirdly and not useful anymore
 rm(contrast_data)
@@ -242,44 +404,543 @@ fisher.test(
 Relative risk of switching from flying right to flying left when the left background has high contrast to the left foreground and right background has no contrast to the right foreground:
 ```{r}
 #| label: Relative Risk Left Contrast
-relative_risk_left(contingency_table_normal_contrast)
+calculate_relative_risk_left(contingency_table_normal_contrast)
 ```
 
 Relative risk of switching from flying left to flying right when the left background is has no contrast to the left foregorund and right background is high contrast to the right foreground
 ```{r}
 #| label: Relative Risk Right Contrast
-relative_risk_right(contingency_table_normal_contrast)
+calculate_relative_risk_right(contingency_table_normal_contrast)
 ```
 
 
-## Generalised Linear Model
+```{r}
+#| label: Switch Probability Contrast
+calculate_switch_proability(
+  contingency_table_contrast,
+  bias_left,
+  bias_right
+) * 100
+```
+
+
+### Unbias Foreground to Background Contrast
+
+```{r}
+#| label: Unbias count data
+
+unbias_count_data <- data %>% generate_even_state_data(
+) %>% generate_count_data(
+)
+
+```
+
+```{r}
+#| label: Unbias Contingency Table Contrast
+
+unbias_contrast_data <- unbias_count_data %>% add_contrast_columns(
+) %>% mutate( # Makes contrast absolute
+  contrast_bg1_fg1 = abs(contrast_bg1_fg1),
+  contrast_fg2_bg2 = abs(contrast_fg2_bg2)
+) %>% factorise_data(
+) %>% mutate( # Encodes 0 to be high contrast and 1 to be low contrast to be consistent
+  contrast_bg1_fg1 = fct_recode(contrast_bg1_fg1, "1" = "0", "0" = "1"),
+  contrast_fg2_bg2 = fct_recode(contrast_fg2_bg2, "1" = "0", "0" = "1")
+)
+
+unbias_contingency_table_contrast <- unbias_contrast_data %>% generate_contingency_table(
+  contrast_bg1_fg1,
+  contrast_fg2_bg2
+)
+
+unbias_contingency_table_normal_contrast <- unbias_contrast_data %>% generate_normal_contingency_table(
+  contrast_bg1_fg1,
+  contrast_fg2_bg2
+)
+
+
+unbias_contingency_table_contrast
+
+# Clean up since it is formated weirdly and not useful anymore
+rm(unbias_contrast_data)
+```
+
+```{r}
+#| label: Unbias Chi-Squared Contrast
+
+unbias_chi_squared_contrast <- chisq.test(
+  unbias_contingency_table_contrast,
+  p=contingency_table_expected,
+  correct=FALSE
+)
+unbias_chi_squared_contrast
+```
+
+```{r}
+#| label: Unbias Fisher's Exact Contrast
+
+fisher.test(
+  unbias_contingency_table_contrast
+)
+
+```
+Relative risk of switching from flying right to flying left when the left background has high contrast to the left foreground and right background has no contrast to the right foreground:
+```{r}
+#| label: Unbias Relative Risk Left Contrast
+calculate_relative_risk_left(unbias_contingency_table_normal_contrast)
+```
+
+Relative risk of switching from flying left to flying right when the left background is has no contrast to the left foregorund and right background is high contrast to the right foreground
+```{r}
+#| label: Unbias Relative Risk Right Contrast
+calculate_relative_risk_right(unbias_contingency_table_normal_contrast)
+```
+
+```{r}
+#| label: Unbias Switch Probability Contrast
+calculate_switch_proability(
+  unbias_contingency_table_contrast,
+  bias_left,
+  bias_right
+) * 100
+```
+
+## GLM
 
 ```{r}
 #| label: Model Data
+#| output: FALSE
 
 model_data <- data %>% add_context_trial_id(
 ) %>% add_context_bird_id(
-) %>% add_contrast_columns(
-) %>% factorise_data(
+) %>% add_bird_age(
+  "2025-04-01" # Start date of experiment
+) %>% factorise_data()
+```
+
+### Bird ID
+
+Four birds were never seen flying through my tunnel setup
+```{r}
+#| label: Total Individuals
+
+bird_ids <- model_data %>% drop_na(
+  bird_id
+) %>% pull(
+  bird_id
+) %>% as.character(
+) %>% unique()
+
+print("Number of unique individuals:")
+bird_ids %>% length(
+)
+
+print("Individuals who were not observed flying through the tunnel:")
+setdiff(
+  1:59,
+  bird_ids
+)
+
+min_flights = 10
+sprintf("Number of individuals who flew through more than %d times:", min_flights)
+exceeds_min_flights <- model_data %>% count(
+  bird_id
+) %>% filter(
+  n >= min_flights
+) %>% pull(
+  bird_id
+) %>% as.character(
+) %>% unique(
+) 
+exceeds_min_flights %>% length(
+)
+rm(min_flights)
+
+print("Number of individuals who flew through all trial state at least once")
+data %>% drop_na(
+  bird_id
+) %>% count(
+  bird_id,
+  trial_id
+) %>% count(
+  bird_id
+) %>% filter(
+  n == 8
+) %>% nrow()
+```
+
+```{r}
+#| label: Bird ID Plot
+
+bird_id_plot <- data %>% drop_na(
+  bird_id
+) %>% plot_bird_id(
+)
+bird_id_plot
+
+save_figure(
+  bird_id_plot,
+  here("figures/figure_bird_id"),
+  c(20,15)
+)
+```
+
+
+
+### Building a Model
+```{r}
+#| label: Model comparisons
+
+null_model <- model_data %>% model_null()
+aic_tibble <- tibble(
+  model_name = "null",
+  model_aic = null_model$aic
+)
+
+background_model <- model_data %>% model_background()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "background",
+  model_aic = background_model$aic
+)
+
+background_interaction_model <- model_data %>% model_background_interaction()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "background_interaction",
+  model_aic = background_interaction_model$aic
+)
+
+foreground_model <- model_data %>% model_foreground()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "foreground",
+  model_aic = foreground_model$aic
+)
+
+foreground_interaction_model <- model_data %>% model_foreground_interaction()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "foreground_interaction",
+  model_aic = foreground_interaction_model$aic
+)
+
+full_model <- model_data %>% model_full()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "full",
+  model_aic = full_model$aic
+)
+
+background_foreground_model <- model_data %>% model_background_foreground()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "background_foreground",
+  model_aic = background_foreground_model$aic
+)
+
+background_foreground_between_interaction_model <- model_data %>% 
+  model_background_foreground_between_interaction()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "background_foreground_between_interaction",
+  model_aic = background_foreground_between_interaction_model$aic
+)
+
+background_foreground_bg_interaction_model <- model_data %>%
+  model_background_foreground_bg_interaction()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "background_foreground_bg_interaction",
+  model_aic = background_foreground_bg_interaction_model$aic
+)
+
+background_foreground_fg_interaction_model <- model_data %>%
+  model_background_foreground_fg_interaction()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "background_foreground_fg_interaction",
+  model_aic = background_foreground_fg_interaction_model$aic
+)
+
+full_far_edge_model <- model_data %>% model_full_far_egde()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "full_far_edge_model",
+  model_aic = full_far_edge_model$aic
+)
+
+full_near_edge_model <- model_data %>% model_full_near_egde()
+aic_tibble <- aic_tibble %>% add_row(
+  model_name = "full_near_edge_model",
+  model_aic = full_near_edge_model$aic
+)
+
+
+# Adds delta AIC
+aic_tibble <- aic_tibble %>% mutate(
+  null_delta_aic = model_aic - first(model_aic)
+)
+```
+
+
+```{r}
+
+# Best model
+glm_model <- model_data %>% model_glm()
+
+summary(glm_model)
+anova(glm_model)
+
+```
+
+```{r}
+#| label: ROC Plot
+
+glm_model_roc_plot <- glm_model %>% plot_roc()
+
+roc_obj <- pROC::roc(model_data$exit_gate_id, predict(glm_model, type = "response"))
+plot(roc_obj, col = "blue")
+pROC::auc(roc_obj)
+
+glm_model_roc_plot
+
+save_figure(
+  glm_model_roc_plot,
+  here("figures/glm_model_rock_plot"),
+  c(20, 15)
+)
+```
+### Independence verification
+
+```{r}
+#| label: Impact of bird removal
+#| output: FALSE
+
+
+for(bird in bird_ids) {
+  model_data %>%
+    filter(
+      !(bird_id %in% bird)
+    ) %>% model_glm(
+    ) %>% summary(
+    ) %>% print(
+    )
+}
+
+```
+
+
+```{r}
+#| label: Easy Stats Check Model
+
+glm_model %>% check_model(
+  
+)
+```
+
+
+```{r}
+#| label: Residual Plot
+
+residuals_data <- tibble(
+  bird_id = model_data$bird_id,
+  bird_sex = model_data$sex,
+  bird_phenotype = model_data$phenotype,
+  #residual = residuals(glm_model, type = "working")
+  residual = glm_model$residuals,
+  datetime = model_data$datetime
+) %>% mutate(
+  bird_id = if_else(
+    is.na(bird_id),
+    paste(bird_sex, bird_phenotype),
+    bird_id
+  )
+) %>% fix_residuals_factor_levels(
+) %>% arrange(
+  bird_id
+) %>% mutate(
+  flight_id = c(1:nrow(model_data)),
+)
+
+
+residuals_plot <- residuals_data %>% plot_residuals()
+residuals_plot
+
+residuals_plot %>% save_figure(
+  here("figures/residuals_plot"),
+  c(25,15)
+)
+
+residuals_datetime_plot <- residuals_data %>% plot_datetime_residuals()
+residuals_datetime_plot
+
+residuals_datetime_plot %>% save_figure(
+  here("figures/residuals_datetime_plot"),
+  c(25,15)
+)
+```
+
+
+### Subset Models
+
+```{r}
+brightness_model <- model_data %>% filter(
+  trial_id %in% c(1,2,3,4)
+) %>% model_subset()
+brightness_model %>% summary()
+
+brightness_model %>% coef(
+) %>% exp(
+)
+1/brightness_model %>% coef(
+) %>% exp(
 )
 ```
 
 ```{r}
-#| label: Flight Direction Model
-
-model <- glm(
-  exit_gate_id ~ 
-    bg1 +
-    fg1 +
-    fg2 +
-    bg2 +
-    contrast_bg1_bg2 +
-    contrast_bg1_fg1 +
-    contrast_fg1_fg2 +
-    contrast_fg2_bg2,
-  data = model_data,
-  family = binomial(link="logit"),
-  weights = ifelse(exit_gate_id == "left", 1/bias_left, 1/bias_right)
+edge_model <- model_data %>% filter(
+  trial_id %in% c(5,6,7,8)
+) %>% model_subset()
+edge_model %>% summary()
+edge_model %>% coef(
+) %>% exp(
 )
-summary(model)
+1/edge_model %>% coef(
+) %>% exp(
+)
 ```
+
+### GLM Interpretation
+
+```{r}
+#| label: GLM interpretation
+
+summary(glm_model)
+
+right_odds_coef <- glm_model %>% coef(
+) %>% exp(
+)
+right_odds_coef
+
+left_odds_coef <- 1/right_odds_coef
+left_odds_coef
+
+```
+```{r}
+#| label: Fully factored predictions
+
+fully_factored <- expand_grid(
+  bg1 = c("light", "dark"),
+  bg2 = c("light", "dark"),
+  fg1 = c("white", "black"),
+  fg2 = c("white", "black")
+) 
+fully_factored <- fully_factored %>% add_column(
+  right_odds_ratio = glm_model %>% predict(
+    fully_factored
+  ) %>% exp(),
+  left_odds_ratio = 1/right_odds_ratio,
+  left_percent = left_odds_ratio / (1+left_odds_ratio) * 100,
+  right_percent = 100-left_percent
+) %>% relocate(
+  left_odds_ratio,
+  right_odds_ratio,
+  bg1,
+  fg1,
+  fg2,
+  bg2
+)
+fully_factored
+
+glm_model %>% predict(
+  tibble(
+    bg1 = "dark",
+    fg1 = "black",
+    fg2 = "black",
+    bg2 = "light"
+  )
+) %>% exp()
+
+```
+
+
+
+## GLMM
+
+### Bird ID
+
+Number of birds fully identified
+```{r}
+model_data %>% drop_na(bird_id) %>% nrow()
+```
+
+```{r}
+#| label: GLMM ID
+bird_id_model <- model_data %>% drop_na(bird_id) %>% model_bird_id()
+summary(bird_id_model)
+anova(bird_id_model)
+
+
+mixed_coef <- coef(bird_id_model)$bird_id %>% mutate(
+  across(everything(), exp),
+  bird_id = sort(as.numeric(bird_ids))
+)
+
+```
+```{r}
+#| label: Comparison model
+
+comparison_model <- model_data %>% drop_na(bird_id) %>% model_glm()
+summary(comparison_model)
+```
+```{r}
+#| label: Check GLMM
+
+bird_id_model %>% check_model()
+```
+
+
+### Bird Mass
+(same sample size as bird ID)
+
+```{r}
+#| label: GLMM Mass
+
+bird_mass_model <- model_data %>% model_bird_mass()
+summary(bird_mass_model)
+anova(bird_mass_model)
+
+```
+
+### Bird Age
+(same sample size as bird ID)
+
+```{r}
+#| label: GLMM Age
+
+bird_age_model <- model_data %>% model_bird_age()
+summary(bird_age_model)
+anova(bird_age_model)
+```
+
+### Bird Sex
+
+Number of birds identified to sex
+```{r}
+model_data %>% drop_na(sex) %>% nrow()
+```
+
+```{r}
+#| label: GLMM Sex
+
+bird_sex_model <- model_data %>% model_bird_sex()
+summary(bird_sex_model)
+anova(bird_sex_model)
+```
+
+### Bird Phenotype
+
+Number of birds identified to phenotype
+```{r}
+model_data %>% drop_na(phenotype) %>% nrow()
+```
+
+```{r}
+#| label: GLMM Phenotype
+
+bird_phenotype_model <- model_data %>% model_bird_phenotype()
+summary(bird_phenotype_model)
+anova(bird_phenotype_model)
+```
+

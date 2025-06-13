@@ -9,8 +9,13 @@ add_context_bird_id <- function(data, bird_id_path="data/bird_id_contexualisatio
   data %>% left_join(
     bird_ids,
     by = join_by(bird_id)
+  ) %>% mutate(
+    sex = coalesce(sex, placehold_sex),
+    phenotype = coalesce(phenotype, placehold_phenotype)
   ) %>% select(
     -left_tag,
-    -right_tag
+    -right_tag,
+    -placehold_sex,
+    -placehold_phenotype
   )
 }

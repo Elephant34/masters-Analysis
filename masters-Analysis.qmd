@@ -117,8 +117,8 @@ trial_id_plot
 
 save_figure(
   trial_id_plot,
-  here("figures/figure_trial_id_plot"),
-  c(20, 15)
+  here("figures/figure_trial_id_plot_LARGE"),
+  c(40, 30)
 )
 ```
 
@@ -204,6 +204,21 @@ normalised_results_plot
 save_figure(
   normalised_results_plot,
   here("figures/figure_overall_results"),
+  size_cm = c(20,15)
+)
+```
+
+## Left Right Bias
+
+```{r}
+#| label: Left Right Bias
+
+bias_plot <- data %>% plot_bias()
+bias_plot
+
+save_figure(
+  bias_plot,
+  here("figures/bias_plot"),
   size_cm = c(20,15)
 )
 ```

@@ -27,6 +27,6 @@ plot_bird_id <- function(data) {
       title = "Number of Flights by Zebra Finch",
       fill = "Trial State"
     ) + theme(
-      axis.title.x = element_text(margin = margin(t = 30, r = 0, b = 0, l = 0))
+      #axis.title.x = element_text(margin = margin(t = 30, r = 0, b = 0, l = 0))
     )
 }
